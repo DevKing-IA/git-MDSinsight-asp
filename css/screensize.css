@@ -1,0 +1,59 @@
+/* Large desktops and laptops */
+@media (min-width: 1200px) {
+
+.container-login .img-responsive{
+	max-width: 350px;
+ }
+ 
+ .fieldservice-heading h1{
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+}
+
+/* Portrait tablets and medium desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+ 
+}
+
+/* Portrait tablets and small desktops */
+@media (min-width: 768px) and (max-width: 991px) {
+ 
+}
+
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+ 
+ 
+	
+	.fieldservice-heading h1{
+		font-size: 26px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+
+
+}
+
+/* Landscape phones and smaller */
+@media (max-width: 480px) {
+	
+	.img-mobile-invisible{
+		visibility: hidden;
+		display: none;
+	}
+	
+	.fieldservice-heading h1{
+		font-size: 16px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	
+	/*.fieldservice-heading .btn-default,.btn-danger{
+		float: none;
+		display: block;
+		width: 100%;
+	}*/
+ 
+}

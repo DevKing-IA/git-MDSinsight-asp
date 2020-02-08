@@ -1,0 +1,254 @@
+﻿@charset "utf-8";
+/* general settings */
+
+body{
+	font-family:Arial, sans-serif;
+	font-size:1.9rem;
+	color:#fff;
+	background: #443731 url(../clientfilesV/filtertrax/filter-trax-bg.jpg) no-repeat center center fixed; 
+  	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
+    height: 100%;
+	padding-top:40px;
+	padding-bottom:40px;
+  }
+
+h1{
+	margin:60px 0px 40px 0px;
+	text-align:center;
+	font-size:6rem;
+	text-shadow: 2px 2px black;
+}
+
+h1 span{
+	font-size:9rem;
+	font-style:italic;
+}
+
+h2{
+	text-align:center;
+	color:#071689;
+	margin:0px 0px 20px 0px;
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #999;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #999;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #999;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    #999;
+}
+
+label{
+	font-weight:normal;
+	font-size:1.9rem;
+	cursor:pointer;
+	margin-top:5px;
+}
+
+a{
+	color:#BC4232;
+	text-decoration:none;
+  	display:block;
+	font-size:15px;
+	padding-top:5px;
+	padding-bottom:10px;
+}
+
+a:hover{
+	color:#236BB8;
+	text-decoration:none;
+}
+	
+.img-responsive{
+	max-width: 100%;
+ }
+ 
+.img-responsive-quick-login{
+    max-width: 100%;
+    height: auto;
+ }
+
+/* eof general settings */
+
+/* media queries */
+@media (max-width: 767px){
+	
+	h1{
+		font-size:4rem;
+		margin:40px 0px 20px 0px;
+	}
+	
+	h1 span{
+		font-size:6rem;
+		display:block;
+		width:100%;
+	}
+	
+	h2.quicklogin{
+		margin-top:-1rem;
+
+	}
+	
+	h1.quicklogin{
+		font-size:3rem;
+		/*margin:40px 0px 20px 0px;*/
+		display:inline;
+
+	}
+	
+	h1.quicklogin span{
+		font-size:4rem;
+		display:block;
+		width:100%;
+		display:inline;		
+	}
+		
+	
+}
+/* eof media queries */
+
+/* login box */
+.login-container{
+	max-width:440px;
+	margin:0 auto;
+	background-color: rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.5);
+	padding:40px 40px 20px 40px;
+	border-radius:5px;
+}
+
+.login-container .input{
+	background:#333;
+	border-top-left-radius:5px;
+	border-bottom-left-radius:5px;
+	padding:10px;
+	width:100%;
+	display:block;
+	cursor:pointer;
+	outline:none;
+	border:0px;
+}
+
+.login-container .icon{
+	background:#236BB8;
+	border-top-right-radius:5px;
+	border-bottom-right-radius:5px;
+	text-align:center;
+	display:block;
+	width:100%;
+	padding:10px;
+}
+
+.login-container .icon img{
+	max-height:27px;
+ 	margin:0 auto;
+} 
+
+
+.login-container button{
+	background:#236BB8;
+	border:0px;
+	color:#fff;
+	outline:none;
+	text-align:center;
+	cursor:pointer;
+	padding:5px 0px 5px 0px;
+	text-transform:uppercase;
+	display:block;
+	width:100%;
+	border-radius:5px;
+	font-size:2rem;
+ }
+ 
+ .login-container button:hover{
+	 opacity:0.8;
+ }
+
+.login-container .line [class^="col-"]{
+	 padding:0px;
+	 margin:0px;
+  }
+  
+  
+.login-container .row{
+	margin-bottom:20px;
+}
+
+
+.quick-login-container{
+	max-width:440px;
+	margin:0 auto;
+	background-color: rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.5);
+	padding:30px 40px 20px 40px;
+	border-radius:5px;
+	margin-top:1rem;
+}
+
+.quick-login-container .input{
+	background:#333;
+	border-top-left-radius:5px;
+	border-bottom-left-radius:5px;
+	padding:10px;
+	width:100%;
+	display:block;
+	cursor:pointer;
+	outline:none;
+	border:0px;
+}
+
+.quick-login-container .icon{
+	background:#236BB8;
+	border-top-right-radius:5px;
+	border-bottom-right-radius:5px;
+	text-align:center;
+	display:block;
+	width:100%;
+	padding:10px;
+}
+
+.quick-login-container .icon img{
+	max-height:27px;
+ 	margin:0 auto;
+} 
+
+
+.quick-login-container button{
+	background:#236BB8;
+	border:0px;
+	color:#fff;
+	outline:none;
+	text-align:center;
+	cursor:pointer;
+	padding:5px 0px 5px 0px;
+	text-transform:uppercase;
+	display:block;
+	width:100%;
+	border-radius:5px;
+	font-size:2rem;
+ }
+ 
+.quick-login-container button:hover{
+	 opacity:0.8;
+ }
+
+.quick-login-container .line [class^="col-"]{
+	 padding:0px;
+	 margin:0px;
+  }
+  
+  
+  
+.quick-login-container .row{
+	margin-bottom:20px;
+}
+
+/* eof login box */

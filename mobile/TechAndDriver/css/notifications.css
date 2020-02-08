@@ -1,0 +1,27 @@
+﻿.shield-icons{
+    margin-top: 15px;
+}
+.shield-icons .red-icon{
+    color: red;
+}
+.shield-icons .green-icon{
+    color: green;
+}  
+.shield-icons .orange-icon{
+    color: orange;
+} 
+.shield-icons .blue-icon{
+    color: blue;
+} 
+.modal-title .red{
+    color: red;
+}  
+.modal-title .green{
+    color: green;
+}
+.modal-title .blue{
+    color: blue;
+}
+.modal-title .orange{
+    color: orange;
+}
