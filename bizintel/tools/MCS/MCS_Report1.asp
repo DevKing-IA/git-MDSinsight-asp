@@ -426,6 +426,13 @@ NeedToRebuild = True
 	    /*display:none; */
 	}
 
+	#tableSuperSumClients .hidden {
+   		position: absolute !important;
+   		top: -9999px !important;
+   		left: -9999px !important;
+	    /*display:none; */
+	}
+
 	
 	/*customizing tooltip color*/
 	
@@ -509,6 +516,18 @@ NeedToRebuild = True
 	    width: 325px;
 	    height: 20px;   		
 	}
+	/* chain filter style */
+	td.details-control {
+		background: url(/img/details_open.png) no-repeat center center;
+    cursor: pointer;
+	}
+	tr.shown td.details-control {
+		background: url(/img/details_close.png) no-repeat center center;
+	}
+	tr.fold td{
+		padding-left: 0px;
+    	padding-right: 0px;
+	}
 		
 </style>
 
@@ -519,6 +538,13 @@ NeedToRebuild = True
 
 $(document).ready(function() {
 
+	$(function(){
+		$('.fold-table tr.view').on('click', 'td.details-control', function(){
+			$(this).parent().toggleClass("shown").next(".fold").toggleClass("open");
+			// $('table.display1').resize();
+		});
+	});
+	
     $("#PleaseWaitPanel").hide();
 	
     $("#AddedCustID").val("");
@@ -530,17 +556,74 @@ $(document).ready(function() {
     //$('[data-tooltip="tooltip"]').tooltip();
     
 	$('#tableSuperSum').DataTable({
-	        scrollY: 500,
+	        scrollY: 1200,
 	        scrollCollapse: true,
 	        paging: false,
 			//order: [ 11, 'asc' ]
-	        order: [[ 13, 'asc' ],[ 14, 'asc' ]],
+	        order: [[ 13, 'asc' ]],
 			columnDefs: [
-			        { targets: [18, 19], "orderable": false,},
+					{ targets: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18, 19,20,21,22,23], "orderable": false,},
 			        { type: 'currency', targets: 13}
 			    ]	        
 	    }
 	);
+
+	// $('table.display1').DataTable({
+	//         scrollY: 1500,
+	//         scrollCollapse: true,
+	// 		sDom: 'lrtip',
+	//         paging: false,
+	// 		//order: [ 11, 'asc' ]
+	//         order: [[ 1, 'asc' ]],
+	// 		columnDefs: [
+	// 				{ targets: [0,18, 19], "orderable": false,},
+	// 		        { type: 'currency', targets: 13},
+
+	// 				{ width: '65px', 'targets': [0] },
+    //                 { width: '75px', 'targets': [1] },
+    //                 { width: '63px', 'targets': [2] },
+    //                 { width: '75px', 'targets': [3] },
+    //                 { width: '94px', 'targets': [4] },
+    //                 { width: '64px', 'targets': [5] },
+    //                 { width: '57px', 'targets': [6] },
+    //                 { width: '55px', 'targets': [7] },
+    //                 { width: '55px', 'targets': [8] },
+    //                 { width: '57px', 'targets': [9] },
+    //                 { width: '84px', 'targets': [10] },
+    //                 { width: '61px', 'targets': [11] },
+    //                 { width: '82px', 'targets': [12] },
+    //                 { width: '57px', 'targets': [13] },
+    //                 { width: '83px', 'targets': [14] },
+    //                 { width: '83px', 'targets': [15] },
+    //                 { width: '96px', 'targets': [16] },
+    //                 { width: '81px', 'targets': [17] },
+    //                 { width: '77px', 'targets': [18] },
+	// 				{ width: '84px', 'targets': [19] },
+    //                 { width: '51px', 'targets': [20] },
+    //                 { width: '116px', 'targets': [21] },
+    //                 { width: '68px', 'targets': [22] },
+    //                 { width: '95px', 'targets': [23] }
+                                       
+                    
+	// 		    ]	        
+	//     }
+	// );
+	
+
+	$('#tableSuperSumClients').DataTable({
+	        scrollY: 500,
+	        scrollCollapse: true,
+	        paging: false,
+			//order: [ 11, 'asc' ]
+	        order: [[ 0, 'asc' ]],
+			columnDefs: [
+					{ targets: [18, 19], "orderable": false,},
+			        { type: 'currency', targets: 13}
+			    ]	        
+	    }
+	);
+	
+	$("#tableSuperSum_info").hide();
 
 	$('#tableSuperSumPendingCharges').DataTable({
 	        scrollY: 500,
@@ -560,6 +643,12 @@ $(document).ready(function() {
 	  
 	  if (target == "#mcs") {
 	  	$("#tableSuperSum").resize();
+		  $('table.display1').resize();
+
+	  }
+
+	  if (target == "#clients") {
+	  	$("#tableSuperSumClients").resize();
 	  }
 
 	  if (target == "#pendingcharges") {
@@ -1262,7 +1351,7 @@ $(document).ready(function() {
 			if (obj.hasAttribute('data-cust-id')) {
 				var CustID = obj.getAttribute("data-cust-id");
 				if($("#chkHideNoActionNeeded").prop('checked')) {					
-					$("#CUST"+CustID).hide();
+					//$("#CUST"+CustID).hide();
 				} else {					
 					$("#CUST"+CustID).show();
 				}
@@ -1274,7 +1363,7 @@ $(document).ready(function() {
 		if (obj.hasAttribute('data-cust-id')) {
 			var CustID = obj.getAttribute("data-cust-id");
 			if($("#chkHideNoActionNeeded").prop('checked')) {					
-				$("#CUST"+CustID).hide();
+				//$("#CUST"+CustID).hide();
 			} else {					
 				$("#CUST"+CustID).show();
 			}
@@ -1401,7 +1490,10 @@ End If
 
 <ul class="nav nav-tabs">
 	<li class="active">
-        <a href="#mcs" data-toggle="tab">MCS</a>
+        <a href="#clients" data-toggle="tab">Clients</a>
+	</li>
+	<li>
+        <a href="#mcs" data-toggle="tab">Chains</a>
 	</li>
 	<li>
 		<a href="#pendingcharges" data-toggle="tab">Pending Charges</a>
@@ -1409,7 +1501,10 @@ End If
 </ul>
 
 <div class="tab-content">
-	<div class="tab-pane active" id="mcs">
+	<div class="tab-pane active" id="clients">
+		<!--#include file="MCS_Report1_Tab_MCS_client.asp"-->
+	</div>
+	<div class="tab-pane" id="mcs">
 		<!--#include file="MCS_Report1_Tab_MCS.asp"-->
 	</div>
 	<div class="tab-pane" id="pendingcharges">

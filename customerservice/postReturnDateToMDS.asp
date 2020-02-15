@@ -15,7 +15,7 @@ Response.Write("rtdte :" & rtdte & "<br>")
 Response.Write("Reason  :" & Reason  & "<br>")
 Response.Write("Session(Userno)  :" & Session("UserNo")  & "<br>")
 Response.Write("Session(ClientCnnString)  :" & Session("ClientCnnString")  & "<br>")
-Session("ClientCnnString") = "Driver={SQL Server};Server=localhost;Database=CorpCoffeedev;Uid=" & MUV_Read("SQL_Owner") & ";Pwd=5um47AS;"
+Session("ClientCnnString") = "Driver={SQL Server};Server=66.201.99.15;Database=CorpCoffeedev;Uid=" & MUV_Read("SQL_Owner") & ";Pwd=5um47AS;"
 Session("UserNo") = "2"
 
 If  Month(rtdte) < 10 Then
@@ -234,7 +234,7 @@ Sub CreateINSIGHTAuditLogEntry(passedIdentity,passedLogEntry,passedMode)
 	'response.write(SQL)
 	
 	Set cnn8 = Server.CreateObject("ADODB.Connection")
-	cnn8.open ("Driver={SQL Server};Server=localhost;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;")
+	cnn8.open ("Driver={SQL Server};Server=66.201.99.15;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;")
 
 	Set rs8 = Server.CreateObject("ADODB.Recordset")
 	rs8.CursorLocation = 3 

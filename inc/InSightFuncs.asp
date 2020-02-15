@@ -343,7 +343,7 @@ Sub CreateINSIGHTAuditLogEntry(passedIdentity,passedLogEntry,passedMode)
 
 	'Before we do anything, get the next entry THREAD
 	Set cnnCreateINSIGHTAuditLogEntry = Server.CreateObject("ADODB.Connection")
-	cnnCreateINSIGHTAuditLogEntry.open ("Driver={SQL Server};Server=localhost;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;")
+	cnnCreateINSIGHTAuditLogEntry.open ("Driver={SQL Server};Server=66.201.99.15;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;")
 	Set rsCreateINSIGHTAuditLogEntry = Server.CreateObject("ADODB.Recordset")
 	rsCreateINSIGHTAuditLogEntry.CursorLocation = 3 
 		
@@ -407,7 +407,7 @@ Sub CreateINSIGHTAuditLogEntry(passedIdentity,passedLogEntry,passedMode)
 	'response.write(SQL)
 	
 	Set cnnCreateINSIGHTAuditLogEntry = Server.CreateObject("ADODB.Connection")
-	cnnCreateINSIGHTAuditLogEntry.open ("Driver={SQL Server};Server=localhost;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;")
+	cnnCreateINSIGHTAuditLogEntry.open ("Driver={SQL Server};Server=66.201.99.15;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;")
 	Set rsCreateINSIGHTAuditLogEntry = Server.CreateObject("ADODB.Recordset")
 	rsCreateINSIGHTAuditLogEntry.CursorLocation = 3 
 		
@@ -474,7 +474,7 @@ Function HasCustomLoginPage(passedCustID)
 	SQL = "SELECT * FROM tblServerInfo where clientKey='"& passedCustID &"'"
 	Set Connection = Server.CreateObject("ADODB.Connection")
 	Set Recordset = Server.CreateObject("ADODB.Recordset")
-	Connection.Open "Driver={SQL Server};Server=localhost;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;"
+	Connection.Open "Driver={SQL Server};Server=66.201.99.15;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;"
 
 	'Open the recordset object executing the SQL statement and return records
 	Recordset.Open SQL,Connection,3,3
@@ -3266,7 +3266,7 @@ Function advancedDispatchIsOn()
 	Set ConnectionadvancedDispatchIsOn = Server.CreateObject("ADODB.Connection")
 	Set RecordsetadvancedDispatchIsOn = Server.CreateObject("ADODB.Recordset")
 	RecordsetadvancedDispatchIsOn.CursorLocation = 3 
-	ConnectionadvancedDispatchIsOn.Open "Driver={SQL Server};Server=localhost;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;"
+	ConnectionadvancedDispatchIsOn.Open "Driver={SQL Server};Server=66.201.99.15;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;"
 	RecordsetadvancedDispatchIsOn.Open SQLadvancedDispatchIsOn,ConnectionadvancedDispatchIsOn,3,3
 	
 	If RecordsetadvancedDispatchIsOn.EOF Then 
@@ -3479,7 +3479,7 @@ Function filterChangeModuleOn()
 	Set ConnectionfilterChangeModuleOn = Server.CreateObject("ADODB.Connection")
 	Set RecordsetfilterChangeModuleOn = Server.CreateObject("ADODB.Recordset")
 	RecordsetfilterChangeModuleOn.CursorLocation = 3 
-	ConnectionfilterChangeModuleOn.Open "Driver={SQL Server};Server=localhost;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;"
+	ConnectionfilterChangeModuleOn.Open "Driver={SQL Server};Server=66.201.99.15;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;"
 	Set RecordsetfilterChangeModuleOn = ConnectionfilterChangeModuleOn.Execute(SQLfilterChangeModuleOn)
 	
 	If RecordsetfilterChangeModuleOn.EOF Then 
@@ -4808,7 +4808,7 @@ Function GetPassPhrase(passedClientKey)
 	SQLGetPassPhrase = "SELECT * FROM tblServerInfo where clientKey='"& passedClientKey &"'"
 	Set cnnGetPassPhrase = Server.CreateObject("ADODB.Connection")
 	Set rsGetPassPhrase = Server.CreateObject("ADODB.Recordset")
-	cnnGetPassPhrase.Open "Driver={SQL Server};Server=localhost;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;"
+	cnnGetPassPhrase.Open "Driver={SQL Server};Server=66.201.99.15;Database=_BIInsight;Uid=biinsight;Pwd=Z32#kje4217;"
 
 	rsGetPassPhrase.Open SQLGetPassPhrase,cnnGetPassPhrase,3,3
 

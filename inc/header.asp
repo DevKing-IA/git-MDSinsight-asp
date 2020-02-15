@@ -60,7 +60,7 @@
     <meta name="author" content="">
 
     <title>MDS Insight Dashboard</title>
-
+	<link href="<%= BaseURL %>css/new.css" rel="stylesheet">
     <!-- Bootstrap core CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!-- End Bootstrap core CSS -->
@@ -169,7 +169,33 @@
 	                easing: 'swing'
 	            }
 	        });
-	        
+
+			function format (data) {
+				return '<div class="details-container">'+
+					'<table cellpadding="5" cellspacing="0" border="0" class="details-table">'+
+						'<tr>'+
+							'<td class="title">Person ID:</td>'+
+							'<td>'+data.id+'</td>'+
+						'</tr>'+
+						'<tr>'+
+							'<td class="title">Name:</td>'+
+							'<td>'+data.first_name + ' ' + data.last_name +'</td>'+
+							'<td class="title">Email:</td>'+
+							'<td>'+data.email+'</td>'+
+						'</tr>'+
+						'<tr>'+
+							'<td class="title">Country:</td>'+
+							'<td>'+data.country+'</td>'+
+							'<td class="title">IP Address:</td>'+
+							'<td>'+data.ip_address+'</td>'+
+						'</tr>'+
+					'</table>'+
+					'</div>';
+			};
+
+			//var table = $('.fold-table').DataTable({columnDefs: [{ paging: false, orderable: false, targets: '_all' }]});
+	        //Chain accordian click event
+			
 	        //prepare tooltip for navbar
 	        $("[rel=tooltip]").tooltip({ placement: 'right'});
 	        
