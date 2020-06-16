@@ -1,5 +1,4 @@
-<!-- row !-->
-<div class="row" style="width:98%; margin-left:10px; margin-top:20px;">
+﻿<div class="row" style="width:98%; margin-left:10px; margin-top:20px;">
 
 
     <div class="container-fluid">
@@ -158,7 +157,10 @@
                     If CustMonthlyContractedSalesDollars - ThreePPAvgSales < 100 Then
                         ' See if it is less than 10%
                         x = CustMonthlyContractedSalesDollars - ThreePPAvgSales
-                        If (x / CustMonthlyContractedSalesDollars) * 100 < 10 Then ShowThisRecord = False ' 56 to 50
+                        If ApplyRule <> 1 Then
+                        Else
+                            If (x / CustMonthlyContractedSalesDollars) * 100 < 10 Then ShowThisRecord = False ' 56 to 50
+                        End If
                     End IF
                     
                 End If

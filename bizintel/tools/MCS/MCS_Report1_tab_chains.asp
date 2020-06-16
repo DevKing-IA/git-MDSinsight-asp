@@ -1,4 +1,4 @@
-<!-- row !-->
+﻿<!-- row !-->
 <div class="row" style="width:98%; margin-left:10px; margin-top:20px;">
 	<div class="container-fluid">
 		<div class="row">
@@ -42,8 +42,11 @@
 	
 	<%		
 			Response.Write("<tbody>")
-		ChainSQL1 = "SELECT ChainID FROM AR_Customer INNER JOIN BI_MCSData ON BI_MCSData.CustID = AR_Customer.CustNum WHERE MonthlyContractedSalesDollars <> 0 group by ChainID"
-		SQL = "SELECT * FROM AR_Customer INNER JOIN BI_MCSData ON BI_MCSData.CustID = AR_Customer.CustNum WHERE MonthlyContractedSalesDollars <> 0 and ChainID <> 0" 	
+		ChainSQL1 = "SELECT ChainID FROM AR_Customer INNER JOIN BI_MCSData ON BI_MCSData.CustID = AR_Customer.CustNum WHERE MonthlyContractedSalesDollars <> 0 and ChainID <> 0 group by ChainID"
+		'SQL = "SELECT * FROM AR_Customer INNER JOIN BI_MCSData ON BI_MCSData.CustID = AR_Customer.CustNum WHERE MonthlyContractedSalesDollars <> 0 and ChainID <> 0" 	
+		
+		SQL = "SELECT * FROM AR_Customer INNER JOIN BI_MCSData ON BI_MCSData.CustID = AR_Customer.CustNum WHERE ChainID <> 0 ANd AR_Customer.Custnum In " 
+		SQL = SQL & " (SELECT CustID FROM BI_MCSData WHERE ChainID <> 0 )" 
 		
 		Set cnn8 = Server.CreateObject("ADODB.Connection")
 		cnn8.open (Session("ClientCnnString"))
@@ -87,11 +90,14 @@
 							If ShowThisRecord <> False Then			
 								SelectedCustomerID = rs("CustNum")
 								CustName = rs("Name")
-								CustMonthlyContractedSalesDollars = 0
-								EnrollmentDate = ""								
+								CustMonthlyContractedSalesDollars = 0							
 								CustMonthlyContractedSalesDollars = rs("MonthlyContractedSalesDollars")
+								
+								If CustMonthlyContractedSalesDollars > 0  Then 
+								Else
+									CustMonthlyContractedSalesDollars = 0.00
+								End If
 								MaxMCSCharge = rs("MaxMCSCharge")
-								EnrollmentDate =  rs("MCSEnrollmentDate")	
 
 								'Decide if this record meets the filter criteria
 								If FilterSlsmn1 <> "" And FilterSlsmn1 <> "All" Then
@@ -101,72 +107,17 @@
 								If FilterSlsmn2 <> "" And FilterSlsmn2 <> "All" Then
 									If CInt(FilterSlsmn2) <> Cint(rs("SecondarySalesman")) Then ShowThisRecord = False
 								End If
-
 							End If
 
-							Month3Sales_NoRent = rs("Month3Sales_NoRent") - rs("Month3Cat21Sales")
-							Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales") 
-							Month2Sales_NoRent = rs("Month2Sales_NoRent") - rs("Month2Cat21Sales") 
-
-							If ShowAllCusts <> 1 Then
-								If Month3Sales_NoRent >= CustMonthlyContractedSalesDollars Then ShowThisRecord = False
-							End If
-	
-							If ShowZeroSalesCusts = 1 Then
-								If Month3Sales_NoRent > 0 Then ShowThisRecord = False
-							End If
-	
+							Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales")
+							Month2Sales_NoRent = rs("Month2Sales_NoRent") - rs("Month2Cat21Sales")
+							Month3Sales_NoRent = rs("Month3Sales_NoRent") - rs("Month3Cat21Sales")								
 							VarianceHolder = Month3Sales_NoRent - CustMonthlyContractedSalesDollars 
 							CurrentHolder = rs("CurrentHolder")
 							CurrentMonthVarianceHolder = CurrentHolder - CustMonthlyContractedSalesDollars
-
-							' Calc under by the current month recovered the deficit
-							If VarianceHolder < 0 Then 'Meaning they have a variance
-								If CurrentHolder >= CustMonthlyContractedSalesDollars + ABS(VarianceHolder)  Then
-									If IncludeDeficitCovered <> 1 Then ShowThisRecord = False
-								End If
-							End If		
-							
-							If ABS(VarianceHolder) < 100 Then
-								If Month3Sales_NoRent <> 0 Then
-									VariancePercentHolder = 100 - ((Month3Sales_NoRent/CustMonthlyContractedSalesDollars) * 100) 
-								End If
-
-								VariancePercentHolder  = VariancePercentHolder  * -1
-
-								If ApplyRule = 1 Then
-									If ABS(VariancePercentHolder) < 10 Then
-										ARCount = ARCount + 1
-										ShowThisRecord = False
-									End If
-								End If
-							End If
-	
-							If ShowThisRecord <> False Then
 								
-								ThreePPSales = Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent
-								Month3Cost_NoRent = rs("Month3Cost_NoRent") 
-								Month3GP = Month3Sales_NoRent - Month3Cost_NoRent
-
-								If Not IsNumeric(Month3GP) Then Month3GP  = 0
-
-								ThreePPAvgSales = (Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent) / 3
-
-								' New Rule 5 per david /12/6/19			
-								If ThreePPAvgSales >= CustMonthlyContractedSalesDollars Then ShowThisRecord = False  '69 to 56
-								
-								'Now see if the shortage is less than $100
-								If CustMonthlyContractedSalesDollars - ThreePPAvgSales < 100 Then
-									' See if it is less than 10%
-									x = CustMonthlyContractedSalesDollars - ThreePPAvgSales
-									If (x / CustMonthlyContractedSalesDollars) * 100 < 10 Then ShowThisRecord = False ' 56 to 50
-								End IF
-							End If
-	
 							If ShowThisRecord <> False Then
 								record_num = record_num + 1
-								Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales") 
-								Month2Sales_NoRent = rs("Month2Sales_NoRent") - rs("Month2Cat21Sales") 
 								ThreePPSales = Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent		
 								Month3Cost_NoRent = rs("Month3Cost_NoRent") 	
 								Month3GP = Month3Sales_NoRent - Month3Cost_NoRent
@@ -213,20 +164,20 @@
 				End If
 	
 				If record_num > 0 Then
-					' If ShowAllCusts <> 1 Then
-					' 	If total_Month3Sales_NoRent >= total_CustMonthlyContractedSalesDollars Then ShowThisRecord = False
-					' End If
+					If ShowAllCusts <> 1 Then
+						If total_Month3Sales_NoRent >= total_CustMonthlyContractedSalesDollars Then ShowThisRecord = False
+					End If
 	
-					' If ShowZeroSalesCusts = 1 Then
-					' 	If total_Month3Sales_NoRent > 0 Then ShowThisRecord = False
-					' End If
+					If ShowZeroSalesCusts = 1 Then
+						If total_Month3Sales_NoRent > 0 Then ShowThisRecord = False
+					End If
 
-					' ' Calc under by the current month recovered the deficit
-					' If total_VarianceHolder < 0 Then 'Meaning they have a variance
-					' 	If total_CurrentHolder >= total_CustMonthlyContractedSalesDollars + ABS(total_VarianceHolder)  Then
-					' 		If IncludeDeficitCovered <> 1 Then ShowThisRecord = False
-					' 	End If
-					' End If
+					' Calc under by the current month recovered the deficit
+					If total_VarianceHolder < 0 Then 'Meaning they have a variance
+						If total_CurrentHolder >= total_CustMonthlyContractedSalesDollars + ABS(total_VarianceHolder)  Then
+							If IncludeDeficitCovered <> 1 Then ShowThisRecord = False
+						End If
+					End If
 
 					If ABS(total_VarianceHolder) < 100 Then
 						If total_Month3Sales_NoRent <> 0 Then
@@ -243,19 +194,18 @@
 					If ShowThisRecord <> False Then					
 						total_ThreePPSales = total_Month1Sales_NoRent + total_Month2Sales_NoRent + total_Month3Sales_NoRent		
 						If Not IsNumeric(total_Month3GP) Then total_Month3GP  = 0
-						total_ThreePPAvgSales = (total_Month1Sales_NoRent + total_Month2Sales_NoRent + total_Month3Sales_NoRent) / 3
-						' New Rule 5 per david /12/6/19			
+						total_ThreePPAvgSales = (total_Month1Sales_NoRent + total_Month2Sales_NoRent + total_Month3Sales_NoRent) / 3	
 						If total_ThreePPAvgSales >= total_CustMonthlyContractedSalesDollars Then ShowThisRecord = False  '69 to 56
-						'Now see if the shortage is less than $100
-						If total_CustMonthlyContractedSalesDollars - total_ThreePPAvgSales < 100 Then
-							' See if it is less than 10%
+						If total_CustMonthlyContractedSalesDollars - total_ThreePPAvgSales < (100 * record_num) Then
 							x = total_CustMonthlyContractedSalesDollars - total_ThreePPAvgSales
 							If (x / total_CustMonthlyContractedSalesDollars) * 100 < 10 Then ShowThisRecord = False ' 56 to 50
-						End IF
+						End If
 					End If
 
 					If ShowThisRecord <> False Then
 						child_id = child_id + 1 ' child table id.
+						
+						
 						' Chain information
 						Response.Write("<tr id=""CUST" & total_ChainID & """")
 						Response.Write("class = 'view'>")
@@ -270,6 +220,7 @@
 						Response.Write("<td align='right' class='smaller-detail-line'>" & FormatCurrency(total_Month3Sales_NoRent,0) & "</td>") ' last first month
 						Response.Write("<td align='right' class='smaller-detail-line'>" & FormatCurrency((total_Month1Sales_NoRent + total_Month2Sales_NoRent + total_Month3Sales_NoRent)/3, 0) & "</td>") ' 3 month average
 						
+						If Not IsNumeric(total_ShortageHolder) Then total_ShortageHolder = 0
 						If total_ShortageHolder < 0 Then
 							Response.Write("<td align='right' class='negative-thin smaller-detail-line'>" & FormatCurrency(total_ShortageHolder ,0,0,0) & "</td>") ' shortage last 3 month
 						Else
@@ -383,9 +334,15 @@
 										PrimarySalesMan = rs("Salesman")
 										SecondarySalesMan = rs("SecondarySalesman")
 										CustMonthlyContractedSalesDollars = rs("MonthlyContractedSalesDollars")
+										If CustMonthlyContractedSalesDollars > 0  Then 
+										Else
+											CustMonthlyContractedSalesDollars = 0.00
+										End If
 										InstallDate = rs("InstallDate")
 										MaxMCSCharge = rs("MaxMCSCharge")
 										EnrollmentDate =  rs("MCSEnrollmentDate")
+										If Len(EnrollmentDate) < 2 Then EnrollmentDate = ""
+
 										'Decide if this record meets the filter criteria
 										If FilterSlsmn1 <> "" And FilterSlsmn1 <> "All" Then
 											If CInt(FilterSlsmn1) <> Cint(rs("Salesman")) Then ShowThisRecord = False
@@ -396,60 +353,9 @@
 									End If
 	
 									Month3Sales_NoRent = rs("Month3Sales_NoRent") - rs("Month3Cat21Sales") 
-	
-									If ShowAllCusts <> 1 Then
-										If Month3Sales_NoRent >= CustMonthlyContractedSalesDollars Then ShowThisRecord = False
-									End If
-	
-									If ShowZeroSalesCusts = 1 Then
-										If Month3Sales_NoRent > 0 Then ShowThisRecord = False
-									End If
-	
 									VarianceHolder = Month3Sales_NoRent - CustMonthlyContractedSalesDollars 
-									CurrentHolder = rs("CurrentHolder")	
-									CurrentMonthVarianceHolder = CurrentHolder - CustMonthlyContractedSalesDollars 			
-
-									' Calc under by the current month recovered the deficit
-									If VarianceHolder < 0 Then 'Meaning they have a variance
-										If CurrentHolder >= CustMonthlyContractedSalesDollars + ABS(VarianceHolder)  Then
-											If IncludeDeficitCovered <> 1 Then ShowThisRecord = False
-										End If
-									End If
-									
-									If ABS(VarianceHolder) < 100 Then
-										If Month3Sales_NoRent <> 0 Then
-											VariancePercentHolder = 100 - ((Month3Sales_NoRent/CustMonthlyContractedSalesDollars) * 100) 
-										End If
-										VariancePercentHolder  = VariancePercentHolder  * -1
-										If ApplyRule = 1 Then
-											If ABS(VariancePercentHolder) < 10 Then
-												ARCount = ARCount + 1
-												ShowThisRecord = False
-											End If
-										End If
-									End If
-	
-									If ShowThisRecord <> False Then
-										Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales") 
-										Month2Sales_NoRent = rs("Month2Sales_NoRent") - rs("Month2Cat21Sales") 										
-										ThreePPSales = Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent										
-										Month3Cost_NoRent = rs("Month3Cost_NoRent") 										
-										Month3GP = Month3Sales_NoRent - Month3Cost_NoRent
-
-										If Not IsNumeric(Month3GP) Then Month3GP  = 0				
-
-										ThreePPAvgSales = (Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent) / 3	
-
-										' New Rule 5 per david /12/6/19			
-										If ThreePPAvgSales >= CustMonthlyContractedSalesDollars Then ShowThisRecord = False  '69 to 56
-										
-										'Now see if the shortage is less than $100
-										If CustMonthlyContractedSalesDollars - ThreePPAvgSales < 100 Then
-											' See if it is less than 10%
-											x = CustMonthlyContractedSalesDollars - ThreePPAvgSales
-											If (x / CustMonthlyContractedSalesDollars) * 100 < 10 Then ShowThisRecord = False ' 56 to 50
-										End IF	
-									End If							
+									CurrentHolder = rs("CurrentHolder")
+									CurrentMonthVarianceHolder = CurrentHolder - CustMonthlyContractedSalesDollars				
 	
 									If ShowThisRecord <> False Then									
 										Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales") 
@@ -468,22 +374,22 @@
 										TotalCustsReported = TotalCustsReported + 1	
 										Response.Write("<tr id=""CUST" & SelectedCustomerID & """")
 										Response.Write(">")
-										Response.Write("<td class='smaller-detail-line' style='width:55px;'></td>")
+										Response.Write("<td class='smaller-detail-line' style='width:48px;'></td>")
 										Response.Write("<td class='smaller-detail-line' style='width:67px;'><a href='../CatAnalByPeriod/CatAnalByPeriod_SingleCustomer.asp?CID=" & SelectedCustomerID & "&ZDC=0&VB=3Periods&oon=new' target='_blank'>"& SelectedCustomerID  & "</a></td>")
 										Response.Write("<td class='smaller-detail-line' style = 'width:64px;'><a href='../CatAnalByPeriod/CatAnalByPeriod_SingleCustomer.asp?CID=" & SelectedCustomerID & "&ZDC=0&VB=3Periods&oon=new' target='_blank'>"& CustName & "</a></td>")	
 										PrimarySalesPerson = GetSalesmanNameBySlsmnSequence(PrimarySalesMan)
 										SecondarySalesPerson = GetSalesmanNameBySlsmnSequence(SecondarySalesman)
 
 										If Instr(PrimarySalesPerson ," ") <> 0 Then
-											Response.Write("<td class='smaller-detail-line' style='width:66px;'>" & Left(PrimarySalesPerson,Instr(PrimarySalesPerson ," ")+1) & "</td>")
+											Response.Write("<td class='smaller-detail-line' style='width:65px;'>" & Left(PrimarySalesPerson,Instr(PrimarySalesPerson ," ")+1) & "</td>")
 										Else
-											Response.Write("<td class='smaller-detail-line' style='width:66px;'>" & PrimarySalesPerson & "</td>")
+											Response.Write("<td class='smaller-detail-line' style='width:65px;'>" & PrimarySalesPerson & "</td>")
 										End If
 
 										If Instr(SecondarySalesPerson," ") <> 0 Then
-											Response.Write("<td class='smaller-detail-line' style='width:85px;'>" & Left(SecondarySalesPerson,Instr(SecondarySalesPerson," ")+1) & "</td>")
+											Response.Write("<td class='smaller-detail-line' style='width:83px;'>" & Left(SecondarySalesPerson,Instr(SecondarySalesPerson," ")+1) & "</td>")
 										Else
-											Response.Write("<td class='smaller-detail-line' style='width:85px;'>" & SecondarySalesPerson & "</td>")
+											Response.Write("<td class='smaller-detail-line' style='width:83px;'>" & SecondarySalesPerson & "</td>")
 										End If
 										
 										If Not IsDate(InstallDate) Then InstallDate = "01/01/2000"
@@ -537,42 +443,46 @@
 											Response.Write("<td align='right' class='smaller-detail-line' style='width:51px;'><font color='black'>" & FormatCurrency(CurrentHolder,0) & "</foont></td>")
 										End If																			
 										
-										Response.Write("<td align='right' class='smaller-detail-line' style='width:73px;'>" &  FormatCurrency(Month3GP,0)  & "</td>")										
-										Response.Write("<td align='right' class='not-as-small-detail-line' style='border-left: 2px solid #555 !important; width:51px;'>" & FormatCurrency(CustMonthlyContractedSalesDollars,0) & "</td>")
+										Response.Write("<td align='right' class='smaller-detail-line' style='width:71px;'>" &  FormatCurrency(Month3GP,0)  & "</td>")										
+										Response.Write("<td align='right' class='smaller-detail-line' style='border-left: 2px solid #555 !important; width:49px;'>" & FormatCurrency(CustMonthlyContractedSalesDollars,0) & "</td>")
 	
 										If VarianceHolder < 1 Then 
 											If ABS(VarianceHolder) < 1 Then
-												Response.Write("<td align='right' class='negative-thin not-as-small-detail-line' style='width:73px;'>" & "-$0"  & "</td>") ' handle variance less than 1 whole dollar
+												Response.Write("<td align='right' class='negative-thin not-as-small-detail-line' style='width:72px;'>" & "-$0"  & "</td>") ' handle variance less than 1 whole dollar
 											Else
-												Response.Write("<td align='right' class='negative-thin not-as-small-detail-line' style='width:73px;'>" & FormatCurrency(VarianceHolder ,0,0,0) & "</td>")
+												Response.Write("<td align='right' class='negative-thin not-as-small-detail-line' style='width:72px;'>" & FormatCurrency(VarianceHolder ,0,0,0) & "</td>")
 											End If
 										Else
-											Response.Write("<td align='right' class='not-as-small-detail-line' style='width:73px;'>" & FormatCurrency(VarianceHolder ,0,0,0) & "</td>")
+											Response.Write("<td align='right' class='not-as-small-detail-line' style='width:72px;'>" & FormatCurrency(VarianceHolder ,0,0,0) & "</td>")
 										End If
 	
 										If CurrentMonthVarianceHolder < 1 Then 
 											If ABS(CurrentMonthVarianceHolder) < 1 Then
-												Response.Write("<td align='right' class='negative-thin not-as-small-detail-line' style='width:73px;'>" & "-$0"  & "</td>") ' handle variance less than 1 whole dollar
+												Response.Write("<td align='right' class='negative-thin not-as-small-detail-line' style='width:72px;'>" & "-$0"  & "</td>") ' handle variance less than 1 whole dollar
 											Else
-												Response.Write("<td align='right' class='negative-thin not-as-small-detail-line' style='width:73px;'>" & FormatCurrency(CurrentMonthVarianceHolder ,0,0,0) & "</td>")
+												Response.Write("<td align='right' class='negative-thin not-as-small-detail-line' style='width:72px;'>" & FormatCurrency(CurrentMonthVarianceHolder ,0,0,0) & "</td>")
 											End If
 										Else
-											Response.Write("<td align='right' class='not-as-small-detail-line' style='width:73px;'>" & FormatCurrency(CurrentMonthVarianceHolder ,0,0,0) & "</td>")
+											Response.Write("<td align='right' class='not-as-small-detail-line' style='width:72px;'>" & FormatCurrency(CurrentMonthVarianceHolder ,0,0,0) & "</td>")
 										End If																				
-	
-										'EnrollmentDate Date
-										EnrollmentDate = cDate(EnrollmentDate) 
-										eYear = Year(EnrollmentDate)
 
-										If Month(EnrollmentDate) < 10 Then eMonth = "0" & Month(EnrollmentDate) else eMonth = Month(EnrollmentDate)
+										If EnrollmentDate <> "" Then
+											'EnrollmentDate Date
+											EnrollmentDate = cDate(EnrollmentDate) 
+											eYear = Year(EnrollmentDate)
 
-										If Day(EnrollmentDate) < 10 Then eDay = "0" & Day(EnrollmentDate) else eDay = Day(EnrollmentDate)
+											If Month(EnrollmentDate) < 10 Then eMonth = "0" & Month(EnrollmentDate) else eMonth = Month(EnrollmentDate)
 
-										EnrollmentDispayableDate = eMonth & "/" & eDay  & "/" & eYear
-										EnrollmentDispayableDate  = cDate(EnrollmentDispayableDate) 
-										Response.Write("<td align='right' class='smaller-detail-line' style='width:86px;'><span class='hidden'>" & eYear & eMonth & eDay & "</span>" & Left(EnrollmentDispayableDate,Len(EnrollmentDispayableDate)-4) & Right(EnrollmentDispayableDate,2) & "</td>")	
+											If Day(EnrollmentDate) < 10 Then eDay = "0" & Day(EnrollmentDate) else eDay = Day(EnrollmentDate)
+
+											EnrollmentDispayableDate = eMonth & "/" & eDay  & "/" & eYear
+											EnrollmentDispayableDate  = cDate(EnrollmentDispayableDate) 
+											Response.Write("<td align='right' class='smaller-detail-line' style='width:85px;'><span class='hidden'>" & eYear & eMonth & eDay & "</span>" & Left(EnrollmentDispayableDate,Len(EnrollmentDispayableDate)-4) & Right(EnrollmentDispayableDate,2) & "</td>")	
+										Else
+											Response.Write("<td align='right' class='smaller-detail-line' style='width:85px;'><span class='hidden'> --- </td>")
+										End If
 										PendingLVFHolder = rs("PendingLVF")
-										Response.Write("<td align='right' class='smaller-detail-line' style='border-right: 2px solid #555 !important; width:72px;'>" &  FormatCurrency(PendingLVFHolder,2)  & "</td>")
+										Response.Write("<td align='right' class='smaller-detail-line' style='border-right: 2px solid #555 !important; width:70px;'>" &  FormatCurrency(PendingLVFHolder,2)  & "</td>")
 										RentalHolder = rs("RentalHolder")
 
 										IF rs("Month3XSF") > 0 Then RentalHolder = RentalHolder  + rs("Month3XSF")
@@ -583,7 +493,7 @@
 											Response.Write("<td align='right' class='smaller-detail-line' style='width:67px;'>" & FormatCurrency(RentalHolder ,0) & "</td>")				
 										End If
 										
-										Response.Write("<td align='right' class='smaller-detail-line' style='width:74px;'>" &  FormatCurrency(LVFHolder,2)  & "</td>")					
+										Response.Write("<td align='right' class='smaller-detail-line' style='width:72px;'>" &  FormatCurrency(LVFHolder,2)  & "</td>")					
 										MaxLVFPerMachineHolder = MaxMCSCharge
 
 										If Not IsNumeric(MaxMCSCharge) Then 
@@ -687,7 +597,7 @@
 							If ABS(total_CurrentMonthVarianceHolder) < 1 Then
 								Response.Write("<td style='display: none'>" & "-$0"  & "</td>") ' handle variance less than 1 whole dollar
 							Else
-								Response.Write("<td style='display: none''>" & FormatCurrency(total_CurrentMonthVarianceHolder ,0,0,0) & "</td>")
+								Response.Write("<td style='display: none'>" & FormatCurrency(total_CurrentMonthVarianceHolder ,0,0,0) & "</td>")
 							End If
 						Else
 							Response.Write("<td style='display: none'>" & FormatCurrency(total_CurrentMonthVarianceHolder ,0,0,0) & "</td>")

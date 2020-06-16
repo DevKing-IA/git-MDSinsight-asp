@@ -1,4 +1,4 @@
-<!--#include file="../../../inc/header-bizintel-mcs.asp"-->
+<!--#include file="../../../inc/header.asp"-->
 <!--#include file="../../../inc/jquery_table_search.asp"-->
 <!--#include file="../../../inc/InSightFuncs_BizIntel.asp"--> 
 <!--#include file="../../../inc/InSightFuncs_Equipment.asp"--> 
@@ -575,7 +575,6 @@ $(document).ready(function() {
 	        scrollY: 500,
 	        scrollCollapse: true,
 	        paging: false,
-			//order: [ 11, 'asc' ]
 	        order: [[ 14, 'desc' ]],
 			columnDefs: [
 					{ targets: [0,3,4,5,16,20,22,23], "orderable": false,},
@@ -594,7 +593,6 @@ $(document).ready(function() {
 	        scrollY: 500,
 	        scrollCollapse: true,
 	        paging: false,
-			//order: [ 11, 'asc' ]
 	        order: [[ 13, 'desc' ]],
 			columnDefs: [
 					{ targets: [18, 19], "orderable": false,},
@@ -1677,15 +1675,7 @@ Sub RebuildMCSData (passedCustID)
 	Set rsMCSData= cnnMCSData.Execute(SQLMCSData)
 	
 	If passedCustID = "" Then
-		SQLMCSData = "INSERT INTO BI_MCSData (CustID,ChainID) "
-		SQLMCSData = SQLMCSData & " SELECT DISTINCT Custnum, ChainNum FROM AR_Customer WHERE CustNum IN ("
-		SQLMCSData = SQLMCSData & " (SELECT CustNum FROM AR_Customer WHERE "
-		SQLMCSData = SQLMCSData & " (MonthlyContractedSalesDollars <> 0) AND (AcctStatus = 'A') "
-		SQLMCSData = SQLMCSData & " UNION "
-		SQLMCSData = SQLMCSData & " SELECT CustNum FROM AR_Customer AS AR_Customer_2 "
-		SQLMCSData = SQLMCSData & " WHERE (ChainNum IN "
-		SQLMCSData = SQLMCSData & " (SELECT ChainNum FROM AR_Customer AS AR_Customer_1 "
-		SQLMCSData = SQLMCSData & " WHERE (ChainNum <> 0) AND (MonthlyContractedSalesDollars <> 0) AND (AcctStatus = 'A')) and chainnum <> 0))) "
+		SQLMCSData = "INSERT INTO BI_MCSData (CustID) SELECT CustNum FROM AR_Customer WHERE MonthlyContractedSalesDollars <> 0 AND AcctStatus='A'" 
 	Else
 		SQLMCSData = "INSERT INTO BI_MCSData (CustID) SELECT CustNum FROM AR_Customer WHERE MonthlyContractedSalesDollars <> 0 AND AR_Customer.CustNum = '"  & passedCustID & "' AND AcctStatus='A'"
 	End If

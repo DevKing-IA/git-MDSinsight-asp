@@ -1,4 +1,4 @@
-<!-- row !-->
+﻿<!-- row !-->
 <div class="row" style="width:98%; margin-left:10px; margin-top:20px;">
 	<div class="container-fluid">
 		<div class="row">
@@ -42,7 +42,7 @@
 	
 	<%		
 			Response.Write("<tbody>")
-		ChainSQL1 = "SELECT ChainID FROM AR_Customer INNER JOIN BI_MCSData ON BI_MCSData.CustID = AR_Customer.CustNum WHERE MonthlyContractedSalesDollars <> 0 group by ChainID"
+		ChainSQL1 = "SELECT ChainID FROM AR_Customer INNER JOIN BI_MCSData ON BI_MCSData.CustID = AR_Customer.CustNum WHERE MonthlyContractedSalesDollars <> 0 and ChainID <> 0 group by ChainID"
 		SQL = "SELECT * FROM AR_Customer INNER JOIN BI_MCSData ON BI_MCSData.CustID = AR_Customer.CustNum WHERE MonthlyContractedSalesDollars <> 0 and ChainID <> 0" 	
 		
 		Set cnn8 = Server.CreateObject("ADODB.Connection")
@@ -101,72 +101,17 @@
 								If FilterSlsmn2 <> "" And FilterSlsmn2 <> "All" Then
 									If CInt(FilterSlsmn2) <> Cint(rs("SecondarySalesman")) Then ShowThisRecord = False
 								End If
-
 							End If
 
-							Month3Sales_NoRent = rs("Month3Sales_NoRent") - rs("Month3Cat21Sales")
-							Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales") 
-							Month2Sales_NoRent = rs("Month2Sales_NoRent") - rs("Month2Cat21Sales") 
-
-							If ShowAllCusts <> 1 Then
-								If Month3Sales_NoRent >= CustMonthlyContractedSalesDollars Then ShowThisRecord = False
-							End If
-	
-							If ShowZeroSalesCusts = 1 Then
-								If Month3Sales_NoRent > 0 Then ShowThisRecord = False
-							End If
-	
+							Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales")
+							Month2Sales_NoRent = rs("Month2Sales_NoRent") - rs("Month2Cat21Sales")
+							Month3Sales_NoRent = rs("Month3Sales_NoRent") - rs("Month3Cat21Sales")								
 							VarianceHolder = Month3Sales_NoRent - CustMonthlyContractedSalesDollars 
 							CurrentHolder = rs("CurrentHolder")
 							CurrentMonthVarianceHolder = CurrentHolder - CustMonthlyContractedSalesDollars
-
-							' Calc under by the current month recovered the deficit
-							If VarianceHolder < 0 Then 'Meaning they have a variance
-								If CurrentHolder >= CustMonthlyContractedSalesDollars + ABS(VarianceHolder)  Then
-									If IncludeDeficitCovered <> 1 Then ShowThisRecord = False
-								End If
-							End If		
-							
-							If ABS(VarianceHolder) < 100 Then
-								If Month3Sales_NoRent <> 0 Then
-									VariancePercentHolder = 100 - ((Month3Sales_NoRent/CustMonthlyContractedSalesDollars) * 100) 
-								End If
-
-								VariancePercentHolder  = VariancePercentHolder  * -1
-
-								If ApplyRule = 1 Then
-									If ABS(VariancePercentHolder) < 10 Then
-										ARCount = ARCount + 1
-										ShowThisRecord = False
-									End If
-								End If
-							End If
-	
-							If ShowThisRecord <> False Then
 								
-								ThreePPSales = Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent
-								Month3Cost_NoRent = rs("Month3Cost_NoRent") 
-								Month3GP = Month3Sales_NoRent - Month3Cost_NoRent
-
-								If Not IsNumeric(Month3GP) Then Month3GP  = 0
-
-								ThreePPAvgSales = (Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent) / 3
-
-								' New Rule 5 per david /12/6/19			
-								If ThreePPAvgSales >= CustMonthlyContractedSalesDollars Then ShowThisRecord = False  '69 to 56
-								
-								'Now see if the shortage is less than $100
-								If CustMonthlyContractedSalesDollars - ThreePPAvgSales < 100 Then
-									' See if it is less than 10%
-									x = CustMonthlyContractedSalesDollars - ThreePPAvgSales
-									If (x / CustMonthlyContractedSalesDollars) * 100 < 10 Then ShowThisRecord = False ' 56 to 50
-								End IF
-							End If
-	
 							If ShowThisRecord <> False Then
 								record_num = record_num + 1
-								Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales") 
-								Month2Sales_NoRent = rs("Month2Sales_NoRent") - rs("Month2Cat21Sales") 
 								ThreePPSales = Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent		
 								Month3Cost_NoRent = rs("Month3Cost_NoRent") 	
 								Month3GP = Month3Sales_NoRent - Month3Cost_NoRent
@@ -213,20 +158,20 @@
 				End If
 	
 				If record_num > 0 Then
-					' If ShowAllCusts <> 1 Then
-					' 	If total_Month3Sales_NoRent >= total_CustMonthlyContractedSalesDollars Then ShowThisRecord = False
-					' End If
+					If ShowAllCusts <> 1 Then
+						If total_Month3Sales_NoRent >= total_CustMonthlyContractedSalesDollars Then ShowThisRecord = False
+					End If
 	
-					' If ShowZeroSalesCusts = 1 Then
-					' 	If total_Month3Sales_NoRent > 0 Then ShowThisRecord = False
-					' End If
+					If ShowZeroSalesCusts = 1 Then
+						If total_Month3Sales_NoRent > 0 Then ShowThisRecord = False
+					End If
 
-					' ' Calc under by the current month recovered the deficit
-					' If total_VarianceHolder < 0 Then 'Meaning they have a variance
-					' 	If total_CurrentHolder >= total_CustMonthlyContractedSalesDollars + ABS(total_VarianceHolder)  Then
-					' 		If IncludeDeficitCovered <> 1 Then ShowThisRecord = False
-					' 	End If
-					' End If
+					' Calc under by the current month recovered the deficit
+					If total_VarianceHolder < 0 Then 'Meaning they have a variance
+						If total_CurrentHolder >= total_CustMonthlyContractedSalesDollars + ABS(total_VarianceHolder)  Then
+							If IncludeDeficitCovered <> 1 Then ShowThisRecord = False
+						End If
+					End If
 
 					If ABS(total_VarianceHolder) < 100 Then
 						If total_Month3Sales_NoRent <> 0 Then
@@ -243,15 +188,12 @@
 					If ShowThisRecord <> False Then					
 						total_ThreePPSales = total_Month1Sales_NoRent + total_Month2Sales_NoRent + total_Month3Sales_NoRent		
 						If Not IsNumeric(total_Month3GP) Then total_Month3GP  = 0
-						total_ThreePPAvgSales = (total_Month1Sales_NoRent + total_Month2Sales_NoRent + total_Month3Sales_NoRent) / 3
-						' New Rule 5 per david /12/6/19			
+						total_ThreePPAvgSales = (total_Month1Sales_NoRent + total_Month2Sales_NoRent + total_Month3Sales_NoRent) / 3	
 						If total_ThreePPAvgSales >= total_CustMonthlyContractedSalesDollars Then ShowThisRecord = False  '69 to 56
-						'Now see if the shortage is less than $100
-						If total_CustMonthlyContractedSalesDollars - total_ThreePPAvgSales < 100 Then
-							' See if it is less than 10%
+						If total_CustMonthlyContractedSalesDollars - total_ThreePPAvgSales < (100 * record_num) Then
 							x = total_CustMonthlyContractedSalesDollars - total_ThreePPAvgSales
 							If (x / total_CustMonthlyContractedSalesDollars) * 100 < 10 Then ShowThisRecord = False ' 56 to 50
-						End IF
+						End If
 					End If
 
 					If ShowThisRecord <> False Then
@@ -396,60 +338,9 @@
 									End If
 	
 									Month3Sales_NoRent = rs("Month3Sales_NoRent") - rs("Month3Cat21Sales") 
-	
-									If ShowAllCusts <> 1 Then
-										If Month3Sales_NoRent >= CustMonthlyContractedSalesDollars Then ShowThisRecord = False
-									End If
-	
-									If ShowZeroSalesCusts = 1 Then
-										If Month3Sales_NoRent > 0 Then ShowThisRecord = False
-									End If
-	
 									VarianceHolder = Month3Sales_NoRent - CustMonthlyContractedSalesDollars 
-									CurrentHolder = rs("CurrentHolder")	
-									CurrentMonthVarianceHolder = CurrentHolder - CustMonthlyContractedSalesDollars 			
-
-									' Calc under by the current month recovered the deficit
-									If VarianceHolder < 0 Then 'Meaning they have a variance
-										If CurrentHolder >= CustMonthlyContractedSalesDollars + ABS(VarianceHolder)  Then
-											If IncludeDeficitCovered <> 1 Then ShowThisRecord = False
-										End If
-									End If
-									
-									If ABS(VarianceHolder) < 100 Then
-										If Month3Sales_NoRent <> 0 Then
-											VariancePercentHolder = 100 - ((Month3Sales_NoRent/CustMonthlyContractedSalesDollars) * 100) 
-										End If
-										VariancePercentHolder  = VariancePercentHolder  * -1
-										If ApplyRule = 1 Then
-											If ABS(VariancePercentHolder) < 10 Then
-												ARCount = ARCount + 1
-												ShowThisRecord = False
-											End If
-										End If
-									End If
-	
-									If ShowThisRecord <> False Then
-										Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales") 
-										Month2Sales_NoRent = rs("Month2Sales_NoRent") - rs("Month2Cat21Sales") 										
-										ThreePPSales = Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent										
-										Month3Cost_NoRent = rs("Month3Cost_NoRent") 										
-										Month3GP = Month3Sales_NoRent - Month3Cost_NoRent
-
-										If Not IsNumeric(Month3GP) Then Month3GP  = 0				
-
-										ThreePPAvgSales = (Month1Sales_NoRent + Month2Sales_NoRent + Month3Sales_NoRent) / 3	
-
-										' New Rule 5 per david /12/6/19			
-										If ThreePPAvgSales >= CustMonthlyContractedSalesDollars Then ShowThisRecord = False  '69 to 56
-										
-										'Now see if the shortage is less than $100
-										If CustMonthlyContractedSalesDollars - ThreePPAvgSales < 100 Then
-											' See if it is less than 10%
-											x = CustMonthlyContractedSalesDollars - ThreePPAvgSales
-											If (x / CustMonthlyContractedSalesDollars) * 100 < 10 Then ShowThisRecord = False ' 56 to 50
-										End IF	
-									End If							
+									CurrentHolder = rs("CurrentHolder")
+									CurrentMonthVarianceHolder = CurrentHolder - CustMonthlyContractedSalesDollars				
 	
 									If ShowThisRecord <> False Then									
 										Month1Sales_NoRent = rs("Month1Sales_NoRent") - rs("Month1Cat21Sales") 
@@ -468,7 +359,7 @@
 										TotalCustsReported = TotalCustsReported + 1	
 										Response.Write("<tr id=""CUST" & SelectedCustomerID & """")
 										Response.Write(">")
-										Response.Write("<td class='smaller-detail-line' style='width:55px;'></td>")
+										Response.Write("<td class='smaller-detail-line' style='width:47px;'></td>")
 										Response.Write("<td class='smaller-detail-line' style='width:67px;'><a href='../CatAnalByPeriod/CatAnalByPeriod_SingleCustomer.asp?CID=" & SelectedCustomerID & "&ZDC=0&VB=3Periods&oon=new' target='_blank'>"& SelectedCustomerID  & "</a></td>")
 										Response.Write("<td class='smaller-detail-line' style = 'width:64px;'><a href='../CatAnalByPeriod/CatAnalByPeriod_SingleCustomer.asp?CID=" & SelectedCustomerID & "&ZDC=0&VB=3Periods&oon=new' target='_blank'>"& CustName & "</a></td>")	
 										PrimarySalesPerson = GetSalesmanNameBySlsmnSequence(PrimarySalesMan)
@@ -538,7 +429,7 @@
 										End If																			
 										
 										Response.Write("<td align='right' class='smaller-detail-line' style='width:73px;'>" &  FormatCurrency(Month3GP,0)  & "</td>")										
-										Response.Write("<td align='right' class='not-as-small-detail-line' style='border-left: 2px solid #555 !important; width:51px;'>" & FormatCurrency(CustMonthlyContractedSalesDollars,0) & "</td>")
+										Response.Write("<td align='right' class='smaller-detail-line' style='border-left: 2px solid #555 !important; width:51px;'>" & FormatCurrency(CustMonthlyContractedSalesDollars,0) & "</td>")
 	
 										If VarianceHolder < 1 Then 
 											If ABS(VarianceHolder) < 1 Then
@@ -572,7 +463,7 @@
 										EnrollmentDispayableDate  = cDate(EnrollmentDispayableDate) 
 										Response.Write("<td align='right' class='smaller-detail-line' style='width:86px;'><span class='hidden'>" & eYear & eMonth & eDay & "</span>" & Left(EnrollmentDispayableDate,Len(EnrollmentDispayableDate)-4) & Right(EnrollmentDispayableDate,2) & "</td>")	
 										PendingLVFHolder = rs("PendingLVF")
-										Response.Write("<td align='right' class='smaller-detail-line' style='border-right: 2px solid #555 !important; width:72px;'>" &  FormatCurrency(PendingLVFHolder,2)  & "</td>")
+										Response.Write("<td align='right' class='smaller-detail-line' style='border-right: 2px solid #555 !important; width:63px;'>" &  FormatCurrency(PendingLVFHolder,2)  & "</td>")
 										RentalHolder = rs("RentalHolder")
 
 										IF rs("Month3XSF") > 0 Then RentalHolder = RentalHolder  + rs("Month3XSF")
